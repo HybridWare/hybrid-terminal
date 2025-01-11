@@ -1,0 +1,27 @@
+{
+  "name": "hybrid-terminal",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@helia/unixfs": "^4.0.1",
+    "blockstore-fs": "^2.0.2",
+    "datastore-fs": "^10.0.2",
+    "express": "^4.21.2",
+    "files-from-path": "^1.1.1",
+    "get-file-object-from-local-path": "^1.0.2",
+    "helia": "^5.1.1",
+    "hyper-sdk": "^5.1.0",
+    "multiformats": "^13.3.1",
+    "streamx": "^2.21.1",
+    "torrentz": "^17.0.3",
+    "uniqid": "^5.4.0"
+  }
+}

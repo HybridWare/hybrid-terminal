@@ -59,7 +59,7 @@ class Hybrid {
                     } else if(req.body.verb === 'get'){
                         return res.status(200).json(await this.bt.loadTorrent(req.body.id, req.body.path, {}))
                     } else if(req.body.verb === 'post'){
-                        return res.status(200).json(await this.bt.publishTorrent(req.body.id || req.body.address, req.body.path, filesFromPaths(req.body.data), {extra: req.body.extra}))
+                        return res.status(200).json(await this.bt.publishTorrent(req.body.id || req.body.address, req.body.path, await filesFromPaths([req.body.data]), {extra: req.body.extra}))
                     } else if(req.body.verb === 'delete'){
                         return res.status(200).json(await this.bt.shredTorrent(req.body.id, req.body.path, {}))
                     } else {
@@ -80,7 +80,7 @@ class Hybrid {
                             req.body.id = uniqid()
                         }
                         let test
-                        const src = filesFromPaths(req.body.data).map((datas) => {return {path: path.join('/', req.body.id, req.body.path, datas.webkitRelativePath || datas.name), content: Readable.from(datas.stream())}})
+                        const src = (await filesFromPaths([req.body.data])).map((datas) => {return {path: path.join('/', req.body.id, req.body.path, datas.webkitRelativePath || datas.name), content: Readable.from(datas.stream())}})
                         for await (const testing of this.ipfs.drive.addAll(src, useOpts)){
                           test = testing.cid
                         }
@@ -109,7 +109,8 @@ class Hybrid {
                     } else if(req.body.verb === 'post'){
                         const useDrive = req.body.id === holepunch.check ? await this.holepunch.getDrive('title') : await this.holepunch.getDrive(req.body.id)
                         const test = []
-                        for (const info of fileOrFolder(req.body.data)) {
+                        const fileOrFolder = await filesFromPaths([req.body.data])
+                        for (const info of fileOrFolder) {
                           const str = path.join(req.body.path, info.webkitRelativePath || info.name).replace(/\\/g, "/")
                           await pipelinePromise(Readable.from(info.stream()), useDrive.createWriteStream(str, {}))
                           test.push(str)
@@ -152,7 +153,7 @@ func().then((hybrid) => {
     })
     process.on('SIGINT', async function() {
         console.log("Caught interrupt signal")
-        hybrid.bt.destroy()
+        hybrid.bt.webtorrent.destroy()
         await hybrid.ipfs.stop()
         hybrid.hyper.close()
         process.exit()
